@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitEase</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./SplitEase.css">
+</head>
+
+<body>
+    <div class="wrap">
+
+        <header>
+            <div>
+                <div class="tagline">No more awkward moments</div>
+                <div class="logo">Split<span>Ease</span></div>
+            </div>
+            <div style="text-align:right;">
+                <div class="tagline">Currency</div>
+                <select id="currency-select"
+                    style="background:var(--card);border:1.5px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.82rem;padding:7px 12px;border-radius:8px;cursor:pointer;outline:none;">
+                    <option value="₦">₦ NGN</option>
+                    <option value="$">$ USD</option>
+                    <option value="€">€ EUR</option>
+                    <option value="£">£ GBP</option>
+                    <option value="¥">¥ JPY</option>
+                    <option value="₹">₹ INR</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- PEOPLE -->
+        <div class="section">
+            <div id="people-list">
+                <div class="empty">Add people to split with</div>
+            </div>
+            <div class="add-form">
+                <div class="input-group" style="margin:0;flex-direction:row;align-items:center;gap:10px;">
+                    <input type="text" id="person-input" placeholder="Enter name…" style="flex:1;" maxlength="20">
+                    <button class="btn btn-ghost" onclick="addPerson()">＋ Add</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BILL ITEMS -->
+        <div class="section">
+            <div id="items-list">
+                <div class="empty">No items added yet</div>
+            </div>
+            <div class="add-form">
+                <div class="row-2" style="margin-bottom:10px;">
+                    <div class="input-group" style="margin:0;">
+                        <label>Item name</label>
+                        <input type="text" id="item-name" placeholder="e.g. Pizza" maxlength="30">
+                    </div>
+                    <div class="input-group" style="margin:0;">
+                        <label>Amount</label>
+                        <div class="input-prefix">
+                            <span id="currency-prefix">₦</span>
+                            <input type="number" id="item-amount" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="person-select-group">
+                    <div class="person-select-label">Split between (leave all selected for equal split):</div>
+                    <div class="person-chips" id="person-chips">
+                        <div class="empty" style="padding:6px 0;">Add people first</div>
+                    </div>
+                </div>
+                <div style="margin-top:12px;">
+                    <button class="btn btn-ghost btn-full" onclick="addItem()">＋ Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIP & EXTRAS -->
+        <div class="section">
+            <div class="add-form">
+                <div class="row-2">
+                    <div class="input-group" style="margin:0;">
+                        <label>Tip %</label>
+                        <div>
+                            <div class="tip-buttons" id="tip-buttons">
+                                <button class="tip-btn active" onclick="setTip(0,this)">None</button>
+                                <button class="tip-btn" onclick="setTip(10,this)">10%</button>
+                                <button class="tip-btn" onclick="setTip(15,this)">15%</button>
+                                <button class="tip-btn" onclick="setTip(20,this)">20%</button>
+                            </div>
+                            <input type="number" id="tip-custom" placeholder="Custom %" min="0" max="100" step="1"
+                                style="margin-top:8px;" oninput="setCustomTip(this.value)">
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin:0;">
+                        <label>Tax / Service charge</label>
+                        <div class="input-prefix">
+                            <span id="currency-prefix2">₦</span>
+                            <input type="number" id="extra-charge" placeholder="0.00" min="0" step="0.01"
+                                oninput="recalculate()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALCULATE -->
+        <button class="btn btn-accent btn-full" style="font-size:1rem;padding:16px;" onclick="calculate()">
+            Calculate Split
+        </button>
+
+        <!-- RESULT -->
+        <div id="result-section">
+            <hr>
+            <div class="section-label">04 — Result</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="summary-val" id="sum-subtotal">₦0</div>
+                    <div class="summary-key">Subtotal</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-val" id="sum-tip">₦0</div>
+                    <div class="summary-key">Tip + Tax</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-val" id="sum-total">₦0</div>
+                    <div class="summary-key">Total</div>
+                </div>
+            </div>
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>Each person owes</h3>
+                    <button onclick="copyResult()"
+                        style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.78rem;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:6px;border:1px solid var(--accent-mid);">⎘
+                        Copy</button>
+                </div>
+                <div id="result-rows"></div>
+            </div>
+            <button class="btn btn-ghost btn-full" onclick="resetAll()">↺ Start Over</button>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="SplitEase.js">
+    </script>
+</body>
+
+</html>
